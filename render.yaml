@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: fastapi-upload-app
+    env: python
+    plan: free
+    buildCommand: ""
+    startCommand: uvicorn app:app --host 0.0.0.0 --port 8000
