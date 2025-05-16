@@ -1,0 +1,4 @@
+fastapi==0.115.12
+Flask==3.0.0
+pandas==2.1.2
+
