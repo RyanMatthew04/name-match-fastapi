@@ -1,10 +1,11 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 import pandas as pd
 import uvicorn
-from typing import List
+from typing import Dict
 from rapidfuzz.distance.JaroWinkler import normalized_similarity
 from itertools import permutations
 import re
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
@@ -21,12 +22,12 @@ def read_file(file: UploadFile) -> pd.DataFrame:
 
 @app.post("/upload")
 async def upload_files(
-    file1: UploadFile = File(...),
-    file2: UploadFile = File(...)
-) -> List[dict]:
+    master_file: UploadFile = File(...),
+    buyer_file: UploadFile = File(...)
+) -> Dict:
     try:
-        master_df = read_file(file1)
-        test_df = read_file(file2)
+        master_df = read_file(master_file)
+        test_df = read_file(buyer_file)
         
         # Validate required columns
         if 'Master_Code' not in master_df.columns or 'Master_Name' not in master_df.columns:
@@ -112,9 +113,12 @@ async def upload_files(
                     # Limit to top 10 and map to Master_Name
                     top_matches = master_df.loc[unique_indices[:10], 'Master_Name'].tolist()
 
-                    similar_match.append({buyer_name:top_matches})
+                    similar_match.append({
+                    "Buyer_Name": buyer_name,
+                    "Top_Matches": top_matches
+                    })
 
-            return similar_match
+            return JSONResponse(content={"matches": similar_match}, status_code=200)
 
     except HTTPException as http_exc:
         raise http_exc
