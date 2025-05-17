@@ -3,3 +3,6 @@ Flask==3.0.0
 pandas==2.1.2
 python-multipart==0.0.20
 uvicorn==0.34.2
+fuzzywuzzy==0.18.0
+RapidFuzz==3.13.0
+openpyxl==3.1.5
